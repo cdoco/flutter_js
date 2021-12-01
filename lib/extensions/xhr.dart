@@ -323,6 +323,12 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
         }
         // assuming request was successfully executed
         String responseText = utf8.decode(response.bodyBytes);
+
+        // backslashes will cause parsing errors, here needs to be escaped
+        responseText = responseText.replaceAllMapped(RegExp(r'[\\]'), (match) {
+          return '\\${match.group(0)}';
+        });
+
         try {
           responseText = jsonEncode(json.decode(responseText));
         } on Exception {}
