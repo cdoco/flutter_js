@@ -325,7 +325,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
         String responseText = utf8.decode(response.bodyBytes);
 
         // backslashes will cause parsing errors, here needs to be escaped
-        responseText = responseText.replaceAllMapped(RegExp(r'[\\]'), (match) {
+        responseText = responseText.replaceAllMapped(RegExp(r'[\\`$]'), (match) {
           return '\\${match.group(0)}';
         });
 
