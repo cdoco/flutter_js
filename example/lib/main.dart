@@ -123,12 +123,13 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               child: const Text('Fetch Remote Data'),
               onPressed: () async {
                 var asyncResult = await javascriptRuntime.evaluateAsync("""
-                fetch('https://raw.githubusercontent.com/abner/flutter_js/master/cxx/quickjs/VERSION').then(response => response.text());
+                fetch('https://raw.githubusercontent.com/abner/flutter_js/master/FIXED_RESOURCE.txt').then(response => response.text());
               """);
                 await javascriptRuntime.executePendingJob();
                 final promiseResolved =
                     await javascriptRuntime.handlePromise(asyncResult);
-                setState(() => _quickjsVersion = promiseResolved.stringResult);
+                var result = promiseResolved.stringResult;
+                setState(() => _quickjsVersion = result);
               },
             ),
             Text(
@@ -139,7 +140,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.transparent,
+        //backgroundColor: Colors.transparent,
         child: Image.asset('assets/js.ico'),
         onPressed: () {
           setState(() {
