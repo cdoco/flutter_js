@@ -1,14 +1,15 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
     localPropertiesFile.withReader('UTF-8') { reader ->
         localProperties.load(reader)
     }
-}
-
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
@@ -21,15 +22,13 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-
 android {
+    namespace "io.abner.flutter_js_example"
     compileSdkVersion flutter.compileSdkVersion
     
-    ndkVersion "21.3.6528147"
-
+    ndkVersion "27.0.12077973"
+    
+  
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -40,7 +39,10 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main {
+            java.srcDirs += 'src/main/kotlin'
+            jniLibs.srcDirs = ['jniLibs']
+        }
     }
 
     defaultConfig {
@@ -52,6 +54,25 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        // externalNativeBuild {
+        //     cmake {
+        //         cppFlags "-std=c++14 -fexceptions -frtti"
+        //         arguments "-DANDROID_ARM_NEON=TRUE",'-DANDROID_STL=c++_shared'
+        //     }
+        // }
+
+        externalNativeBuild {
+
+        cmake {
+
+            cppFlags ""
+
+            arguments "-DANDROID_STL=c++_shared", "-DANDROID_ARM_NEON=TRUE"
+
+            }
+
+        }
     }
 
     buildTypes {
@@ -61,7 +82,7 @@ android {
             signingConfig signingConfigs.debug
 
             minifyEnabled true
-            useProguard true
+            shrinkResources true
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -73,5 +94,6 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    // implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc-intl:0.3.5"
+    implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.3.5"
 }

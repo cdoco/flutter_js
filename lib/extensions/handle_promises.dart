@@ -12,17 +12,13 @@ extension HandlePromises on JavascriptRuntime {
       var FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT = -1;
 
       function $REGISTER_PROMISE_FUNCTION(promise) {
-        //console.log('_______1');
         FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT += 1;
         idx = FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT;
         FLUTTER_NATIVEJS_PENDING_PROMISES[idx] = FLUTTER_NATIVEJS_MakeQuerablePromise(promise);
-        //console.log('_______'  + FLUTTER_NATIVEJS_PENDING_PROMISES[idx]);
-
-        //console.log('_______2');
         return idx;
       }
     """);
-    final fnResult = evaluate("""
+    final fnMakeQPResult = evaluate("""
       function FLUTTER_NATIVEJS_CLEAN_PROMISE(idx) {
         delete FLUTTER_NATIVEJS_PENDING_PROMISES[idx];
       }
@@ -78,7 +74,8 @@ extension HandlePromises on JavascriptRuntime {
       FLUTTER_NATIVEJS_MakeQuerablePromise;
     """);
 
-    localContext['makeQuerablePromise'] = fnResult.rawResult;
+    localContext['makeQuerablePromise'] = fnMakeQPResult.rawResult;
+    localContext['registerPromise'] = fnRegisterPromise.rawResult;
   }
 
   bool isPendingPromise(int idx) {
@@ -110,7 +107,7 @@ extension HandlePromises on JavascriptRuntime {
       var completed = false;
       Function? fnEvaluatePromise;
       fnEvaluatePromise = () async {
-        await this.executePendingJob();
+        this.executePendingJob();
         if (!completed) {
           await Future.delayed(
               Duration(milliseconds: 20), () => fnEvaluatePromise!.call());
